@@ -1,0 +1,21 @@
+
+Hi, 
+Thank you for the oppurtunity, here are some notes related to the assignment submitted. 
+This is the solution that I worked through for creating and deploying a docker image into AWS. I have done in follwing steps:
+Got the docker image from developers which is given from github page and create an image repository to store our images in AWS.
+I have created the modules as a templates that can be used more than once to create a the images into and for pushing there are some commands provided by AWS. We can automate those steps with a bash script by providing the name of the docker image
+Create AWS ECS service which contain creation of cluster tasks and services. These are also done by terraform by creating various modules and providing the required variables from variables.tf file. 
+Creation of tasks which have information of IAM and which port should be mapped to the tasks 
+Created a service to spin up the container in our cluster and provided VPC and subnet details. 
+To scale and have relability I have attached these containers to a load balancer to which we can create more target groups and add more containers and remove any unwanted containers. 
+I have also created and attached security group to the VPC where we can specify which ports and from which IP the requests can be accepted or sent. 
+
+For monitoring I have added prometheus blackbox and node exporter where we can monitor service status and system status and create alerts in rules.yml file
+Alerts can be sent with alertmanager service using opsgenie integration. We can add thresholds based upon the need and this is automated using puppet templates. 
+The same recording rules and alert rules can be added to grafana for monitoring dashboards or without all of these can use cloudwatch monitoring which is provided by AWS.  https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ConsoleAlarms.html
+
+Scaling at first can be done by adjusting computational resources available at cluster, and later applications capabilities get scaled with respect to load and deploys appropriate number of containers, by enabling autoscaling rules, we can create the correct number of cluster on our application. 
+
+
+For Continous deployment we can add new docker images to the clusters and update the code using git pull or can follow the process provided by AWS which is using AWS code pipeline. 
+https://aws.amazon.com/blogs/devops/build-a-continuous-delivery-pipeline-for-your-container-images-with-amazon-ecr-as-source/

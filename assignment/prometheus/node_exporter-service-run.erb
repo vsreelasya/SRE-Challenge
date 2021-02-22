@@ -1,0 +1,3 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -u <%=@service_name%>:<%=@service_name%> /opt/bigleaf/bin/node_exporter --collector.disable-defaults --collector.cpu.info --collector.cpu --collector.loadavg --collector.meminfo --collector.processes --collector.conntrack --collector.diskstats --collector.logind

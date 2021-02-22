@@ -1,0 +1,47 @@
+groups:
+- name: AllInstances
+  rules:
+  - alert: ServiceDown
+    # Condition for alerting
+    expr: up{job="blackbox_tcp"} == 0 or probe_http_status_code{job="blackbox_http"} != 200
+    for: 15s
+    # Annotation - additional informational labels to store more information
+    annotations:
+      title: 'Service {{ $labels.instance }} down'
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 15 seconds.'
+      # Labels - additional labels to be attached to the alert
+    labels:
+      severity: page
+
+  - alert: ContainerCpuUsage
+    expr: (sum(rate(container_cpu_usage_seconds_total[3m])) BY (instance, name) * 100) > 80
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Container CPU usage (instance {{ $labels.instance }})
+      description: Container CPU usage is above 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}
+
+  - alert: BlackboxProbeSlowPing
+    expr: avg_over_time(probe_icmp_duration_seconds[1m]) > 1
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Blackbox probe slow ping (instance {{ $labels.instance }})
+      description: Blackbox ping took more than 1s\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}
+
+  - alert: SLOLatencyFailure
+    annotations:
+      message: 'Violating SLO that 99% latency is < 1s'
+    expr: 'histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{service="blog"}[1h])) by (le)) > 1'
+    for: 15m
+    labels:
+      severity: critical
+  - alert: SLOAvailabilityFailure
+    annotations:
+      message: 'Violating SLO that 99% of requests are successful'
+    expr: 'sum(rate(http_response_status_count_total{service="blog",status!~"5.."}[1h])) / sum(rate(http_response_status_count_total{service="blog"}[1h])) < .99'
+    for: 15m
+    labels:
+      severity: critical

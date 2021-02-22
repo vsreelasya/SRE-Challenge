@@ -1,0 +1,5 @@
+#!/bin/sh
+exec 2>&1
+exec chpst -u <%=@service_name%>:<%=@service_name%> /usr/bin/prometheus-<%=@service_name%> \
+    --config.file=/opt/bigleaf/etc/<%=@service_name%>/<%=@service_name%>.yml \
+    --storage.path=/opt/bigleaf/lib/prometheus/<%=@service_name%>/
